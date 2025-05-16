@@ -10,7 +10,7 @@ func main() {
 	fmt.Println("Jesus is Lord!")
 
 	router := http.NewServeMux()
-	router.HandleFunc("/middleware-demo", handle_test)
+	router.HandleFunc("/middleware-demo", function_specific_middleware(handle_test))
 
 	server := &http.Server{
 		Addr:    ":8080",
@@ -27,4 +27,11 @@ func handle_test(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 	w.Write(data)
+}
+
+func function_specific_middleware(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("do function specific middleware thing")
+		h(w, r)
+	}
 }
