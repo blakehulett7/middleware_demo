@@ -11,6 +11,8 @@ func main() {
 
 	router := http.NewServeMux()
 	router.HandleFunc("/middleware-demo", function_specific_middleware(handle_test))
+	router.HandleFunc("/middleware-demo-2", more_function_specific_middleware(handle_test))
+	router.HandleFunc("/middleware-demo-3", handle_test)
 
 	server := &http.Server{
 		Addr:    ":8080",
@@ -32,6 +34,13 @@ func handle_test(w http.ResponseWriter, r *http.Request) {
 func function_specific_middleware(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("do function specific middleware thing")
+		h(w, r)
+	}
+}
+
+func more_function_specific_middleware(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("do another function specific middleware thing")
 		h(w, r)
 	}
 }
