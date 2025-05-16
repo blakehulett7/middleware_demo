@@ -14,7 +14,7 @@ func main() {
 
 	server := &http.Server{
 		Addr:    ":8080",
-		Handler: router,
+		Handler: general_middleware(router),
 	}
 	server.ListenAndServe()
 }
@@ -34,4 +34,11 @@ func function_specific_middleware(h http.HandlerFunc) http.HandlerFunc {
 		fmt.Println("do function specific middleware thing")
 		h(w, r)
 	}
+}
+
+func general_middleware(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("do general middleware thing")
+		h.ServeHTTP(w, r)
+	})
 }
