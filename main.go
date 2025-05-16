@@ -14,11 +14,9 @@ func main() {
 	router.HandleFunc("/middleware-demo-2", more_function_specific_middleware(handle_test))
 	router.HandleFunc("/middleware-demo-3", handle_test)
 
-	handler := general_middleware(router)
-
 	server := &http.Server{
 		Addr:    ":8080",
-		Handler: handler,
+		Handler: general_middleware(router),
 	}
 	server.ListenAndServe()
 }
