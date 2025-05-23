@@ -47,3 +47,10 @@ func specific_middleware(h http.HandlerFunc) http.HandlerFunc {
 		h(w, r)
 	}
 }
+
+func more_specific_middleware(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("do a different specific middleware thing")
+		h(w, r)
+	}
+}
