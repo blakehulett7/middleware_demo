@@ -13,7 +13,7 @@ func main() {
 
 	router.HandleFunc("/middleware-test", handle_test)
 	router.HandleFunc("/middleware-test2", specific_middleware(handle_test))
-	router.HandleFunc("/middleware-test3", handle_test)
+	router.HandleFunc("/middleware-test3", more_specific_middleware(handle_test))
 
 	handler := general_middleware(router)
 	server := http.Server{
