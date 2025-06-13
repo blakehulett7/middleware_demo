@@ -14,10 +14,12 @@ func main() {
 	router.HandleFunc("/middleware-test", handle_test)
 	router.HandleFunc("/middleware-test2", specific_middleware(handle_test))
 	router.HandleFunc("/middleware-test3", more_specific_middleware(handle_test))
+	router.HandleFunc("/r-forwarding-test", r_forwarding_test)
+	router.HandleFunc("/fetch-bentkey", fetch_bentkey)
 
 	handler := general_middleware(router)
 	server := http.Server{
-		Addr:    ":8080",
+		Addr:    ":1000",
 		Handler: handler,
 	}
 	server.ListenAndServe()
