@@ -66,7 +66,6 @@ func guardian_middleware(h http.HandlerFunc) http.HandlerFunc {
 func prefix_middleware(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		mux := http.NewServeMux()
-
 		mux.HandleFunc("/test", handle_test)
 
 		fmt.Println(r.URL.Path)
