@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 )
@@ -13,9 +12,11 @@ func main() {
 
 	router.HandleFunc("/middleware-test", handle_test)
 	router.HandleFunc("/middleware-test2", specific_middleware(handle_test))
-	router.HandleFunc("/middleware-test3", more_specific_middleware(handle_test))
-	router.HandleFunc("/r-forwarding-test", r_forwarding_test)
-	router.HandleFunc("/fetch-bentkey", fetch_bentkey)
+
+	router.HandleFunc("/protected/guarded-endpoint", guardian_middleware(handle_test))
+	router.HandleFunc("/protected/guarded-endpoint2", guardian_middleware(handle_test))
+
+	router.Handle("/prefix/", prefix_middleware(handle_test))
 
 	handler := general_middleware(router)
 	server := http.Server{
@@ -26,14 +27,12 @@ func main() {
 }
 
 func handle_test(w http.ResponseWriter, r *http.Request) {
-	res := struct {
-		Res string `json:"res"`
-	}{"Jesus is Lord"}
+	fmt.Println(r.URL.Path)
+	fmt.Fprint(w, "Dominus Iesus Christus")
+}
 
-	data, _ := json.Marshal(res)
-
-	w.Header().Add("Content-Type", "application/json")
-	w.Write(data)
+func write_request_path(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, r.URL.Path)
 }
 
 func general_middleware(h http.Handler) http.Handler {
@@ -54,5 +53,25 @@ func more_specific_middleware(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("do a different specific middleware thing")
 		h(w, r)
+	}
+}
+
+func guardian_middleware(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("endpoint is protected")
+		specific_middleware(h)(w, r)
+	}
+}
+
+func prefix_middleware(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		mux := http.NewServeMux()
+
+		mux.HandleFunc("/test", handle_test)
+
+		fmt.Println(r.URL.Path)
+		next := http.StripPrefix("/prefix", mux)
+
+		next.ServeHTTP(w, r)
 	}
 }
